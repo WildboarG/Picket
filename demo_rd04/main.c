@@ -20,8 +20,8 @@
 #include <task.h>
 #include <wifi_mgmr_ext.h>
 
-#define ROUTER_SSID "WIFI_NAME"
-#define ROUTER_PWD "PASSWORD"
+#define ROUTER_SSID "wifiname"
+#define ROUTER_PWD "12345678"
 
 typedef struct {
   const char *title;

@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+      actions: write 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SDK
+        run: |
+          git clone --recursive https://github.com/Ai-Thinker-Open/Ai-Thinker-WB2.git
+      
+      - name: Elevate Privilege
+        run: |
+          ls Ai-Thinker-WB2/toolchain/riscv/Linux
+          rm -rf Ai-Thinker-WB2/toolchain/riscv/Linux/chmod755.sh
+          mv chmod755.sh Ai-Thinker-WB2/toolchain/riscv/Linux/.
+          bash Ai-Thinker-WB2/toolchain/riscv/Linux/chmod755.sh         
+
+      - name: Compiled
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          GIT_TAG=$TAG make -j32
+          ls -l build_out/ || echo "build_out directory not found" 
+
+      - name: Delete empty files
+        run: find build_out/ -type f -size 0 -delete
+
+      - name: "add header"
+        run: python3 Addhead.py build_out/demo_rd04.bin build_out/output.bin 
+      
+      # - name: Create Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag_name: latest
+      #     name: "Latest Firmware"
+      #     body: "🚀 这是最新的固件发布，每次 push 都会更新！"
+      #     draft: false
+      #     prerelease: false
+      #     files: |
+      #       build_out/*.bin
+      #       build_out/*.elf
+      - name: Create release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build_out/*.bin
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
