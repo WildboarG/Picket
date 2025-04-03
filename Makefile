@@ -8,7 +8,7 @@ export PROJECT_PATH PROJECT_BOARD
 -include ./proj_config.mk
 
 ifeq ($(origin BL60X_SDK_PATH), undefined)
-BL60X_SDK_PATH ?= /home/wildboarg/github/Ai-Thinker-WB2
+BL60X_SDK_PATH ?= Ai-Thinker-WB2
 $(info ****** Please SET BL60X_SDK_PATH ******)
 $(info ****** Trying SDK PATH [$(BL60X_SDK_PATH)])
 endif
